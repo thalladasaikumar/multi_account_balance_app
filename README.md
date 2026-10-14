@@ -23,8 +23,9 @@ date,debit,credit,balance
 1. Open `index.html` in a browser.
 2. Click **Choose CSV files**.
 3. Select multiple account CSV files.
-4. Click **Generate Combined Balance**.
-5. Review the merged daily table and download the CSV if needed.
+4. Check the selected-file count in the upload panel, then click **Generate Combined Balance**.
+5. Watch the status indicator while files are read and balances are calculated; it confirms when generation is complete or shows an error if processing fails.
+6. Review the merged daily table and download the CSV if needed.
 
 ## Notes
 
@@ -50,27 +51,3 @@ Then open:
 ```text
 http://localhost:8000
 ```
-
-## Deploy to GitHub Pages
-
-This project is ready to host as a static website on GitHub Pages.
-
-1. Push this folder to a GitHub repository.
-2. In the repository, open **Settings** > **Pages**.
-3. Set the source to **Deploy from a branch**.
-4. Select the branch you want to publish, usually `main`.
-5. Keep the folder as `/` for the root of the repository, or use `/docs` if you prefer to place the app in a docs folder.
-6. Save the settings.
-
-After a few minutes, GitHub will provide a public URL such as:
-
-```text
-https://your-username.github.io/your-repository-name/
-```
-
-## GitHub-ready notes
-
-- No backend is required.
-- Uploaded CSVs stay in the browser; nothing is sent to a server.
-- This is a suitable static hosting model for sharing with friends or team members.
-- The app accepts multiple account files and merges them into one combined daily balance sheet.

@@ -5,8 +5,27 @@ let mergedCsvText = '';
 const fileInput = document.getElementById('fileInput');
 const generateBtn = document.getElementById('generateBtn');
 const downloadBtn = document.getElementById('downloadBtn');
+const fileCountEl = document.getElementById('fileCount');
+const generationStatus = document.getElementById('generationStatus');
+const generationStatusText = document.getElementById('generationStatusText');
 const summaryEl = document.getElementById('summary');
 const resultTable = document.getElementById('resultTable');
+
+function setGenerationStatus(message, state) {
+  generationStatusText.textContent = message;
+  generationStatus.dataset.state = state;
+}
+
+function updateFileCount() {
+  const count = fileInput.files?.length || 0;
+  fileCountEl.textContent = count === 0
+    ? 'No files selected yet.'
+    : `${count} ${count === 1 ? 'file' : 'files'} selected.`;
+  setGenerationStatus(
+    count === 0 ? 'Choose CSV files to get started.' : 'Ready to generate the combined balance.',
+    'idle'
+  );
+}
 
 function normalizeDate(value) {
   if (!value) return null;
@@ -306,17 +325,22 @@ function buildCsv(data, accounts) {
 async function handleFiles() {
   const files = Array.from(fileInput.files || []);
   if (!files.length) {
+    setGenerationStatus('Select at least one CSV file to continue.', 'error');
     alert('Please upload at least one CSV file.');
     return;
   }
 
   const csvFiles = files.filter((file) => file.name.toLowerCase().endsWith('.csv'));
   if (!csvFiles.length) {
+    setGenerationStatus('No CSV files were selected. Choose one or more CSV files.', 'error');
     alert('Only CSV files are supported.');
     return;
   }
 
+  generateBtn.disabled = true;
+  fileInput.disabled = true;
   try {
+    setGenerationStatus(`Reading ${csvFiles.length} ${csvFiles.length === 1 ? 'file' : 'files'}...`, 'processing');
     const loaded = await Promise.all(
       csvFiles.map(async (file) => ({
         name: file.name,
@@ -324,14 +348,25 @@ async function handleFiles() {
       }))
     );
 
+    setGenerationStatus('Calculation in progress...', 'processing');
+    await new Promise((resolve) => requestAnimationFrame(resolve));
     const result = buildMergedTable(loaded);
     mergedData = result.merged;
     mergedCsvText = buildCsv(mergedData, loaded.map((file) => ({ name: file.name })));
 
     createSummary(csvFiles, mergedData);
     renderTable(mergedData, loaded.map((file) => ({ name: file.name })));
+    setGenerationStatus(
+      `Calculation complete. Combined balances for ${mergedData.length} ${mergedData.length === 1 ? 'day' : 'days'}.`,
+      'success'
+    );
   } catch (error) {
+    const message = error.message || 'An error occurred while processing the CSV files.';
+    setGenerationStatus(`Calculation failed: ${message}`, 'error');
     alert(error.message || 'An error occurred while processing the CSV files.');
+  } finally {
+    generateBtn.disabled = false;
+    fileInput.disabled = false;
   }
 }
 
@@ -354,6 +389,7 @@ function downloadCsv() {
 
 generateBtn.addEventListener('click', handleFiles);
 downloadBtn.addEventListener('click', downloadCsv);
+fileInput.addEventListener('change', updateFileCount);
 
 const initialMessage = document.createElement('div');
 initialMessage.className = 'empty-state';

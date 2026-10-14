@@ -21,8 +21,13 @@
           <input id="fileInput" type="file" accept=".csv" multiple />
           <span>Choose CSV files</span>
         </label>
+        <p id="fileCount" class="file-count" aria-live="polite">No files selected yet.</p>
         <button id="generateBtn" type="button">Generate Combined Balance</button>
         <button id="downloadBtn" class="secondary" type="button">Download CSV</button>
+        <div id="generationStatus" class="generation-status" data-state="idle" role="status" aria-live="polite">
+          <span class="status-spinner" aria-hidden="true"></span>
+          <span id="generationStatusText">Choose CSV files to get started.</span>
+        </div>
       </section>
 
       <section class="info-grid">
