@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# Editor folders
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+
+# Local dev artifacts
+*.log
